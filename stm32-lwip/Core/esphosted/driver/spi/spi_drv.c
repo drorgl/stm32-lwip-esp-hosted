@@ -24,6 +24,8 @@
 #include "netdev_if.h"
 #include <stdlib.h>
 
+#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
+
 /** Constants/Macros **/
 #define TO_SLAVE_QUEUE_SIZE               10
 #define FROM_SLAVE_QUEUE_SIZE             10
@@ -143,6 +145,7 @@ static int esp_netdev_xmit(netdev_handle_t netdev, struct esp_pbuf *net_buf)
 
 	ret = send_to_slave(priv->if_type, priv->if_num,
 			net_buf->payload, net_buf->len);
+	free (net_buf->payload);
 	free(net_buf);
 
 	return ret;
@@ -215,34 +218,34 @@ static void deinit_netdev(void)
   * @param  GPIOx - GPIO Instance like A,B,..
   * @retval 1 if alternate function set else 0
   */
-static int is_gpio_alternate_function_set(GPIO_TypeDef  *GPIOx, uint32_t pin)
-{
-#define GPIO_NUMBER 16U
-	uint32_t position;
-	uint32_t ioposition = 0x00U;
-	uint32_t iocurrent = 0x00U;
-
-	/* Check the parameters */
-	assert_param(IS_GPIO_ALL_INSTANCE(GPIOx));
-	assert_param(IS_GPIO_PIN(pin));
-
-	/* Configure the port pins */
-	for(position = 0U; position < GPIO_NUMBER; position++)
-	{
-		/* Get the IO position */
-		ioposition = 0x01U << position;
-		/* Get the current IO position */
-		iocurrent = (uint32_t)(pin) & ioposition;
-
-		if(iocurrent == ioposition)
-		{
-			if (GPIOx->AFR[position >> 3U]) {
-				return 1;
-			}
-		}
-	}
-	return 0;
-}
+//static int is_gpio_alternate_function_set(GPIO_TypeDef  *GPIOx, uint32_t pin)
+//{
+//#define GPIO_NUMBER 16U
+//	uint32_t position;
+//	uint32_t ioposition = 0x00U;
+//	uint32_t iocurrent = 0x00U;
+//
+//	/* Check the parameters */
+//	assert_param(IS_GPIO_ALL_INSTANCE(GPIOx));
+//	assert_param(IS_GPIO_PIN(pin));
+//
+//	/* Configure the port pins */
+//	for(position = 0U; position < GPIO_NUMBER; position++)
+//	{
+//		/* Get the IO position */
+//		ioposition = 0x01U << position;
+//		/* Get the current IO position */
+//		iocurrent = (uint32_t)(pin) & ioposition;
+//
+//		if(iocurrent == ioposition)
+//		{
+//			if (GPIOx->AFR[position >> 3U]) {
+//				return 1;
+//			}
+//		}
+//	}
+//	return 0;
+//}
 
 /**
   * @brief  Set hardware type to ESP32 or ESP32S2 depending upon
@@ -484,6 +487,10 @@ static stm_ret_t spi_transaction_esp32(uint8_t * txbuff)
 			if ((!len) ||
 				(len > MAX_PAYLOAD_SIZE) ||
 				(offset != sizeof(struct esp_payload_header))) {
+
+				if (len > MAX_PAYLOAD_SIZE){
+					printf("Payload is too big %d but max is %d\r\n", len, MAX_PAYLOAD_SIZE);
+				}
 
 				/* Free up buffer, as one of following -
 				 * 1. no payload to process
@@ -846,7 +853,7 @@ static uint8_t * get_tx_buffer(uint8_t *is_valid_tx_buf)
 		payload_header->offset  = htole16(sizeof(struct esp_payload_header));
 		payload_header->if_type = buf_handle.if_type;
 		payload_header->if_num  = buf_handle.if_num;
-		memcpy(payload, buf_handle.payload, min(len, MAX_PAYLOAD_SIZE));
+		memcpy(payload, buf_handle.payload, MIN(len, MAX_PAYLOAD_SIZE));
 		payload_header->checksum = htole16(compute_checksum(sendbuf,
 				sizeof(struct esp_payload_header)+len));;
 	}
