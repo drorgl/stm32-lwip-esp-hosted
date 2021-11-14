@@ -80,7 +80,7 @@ extern unsigned int lwip_port_rand(void);
 #define LWIP_RAND() (lwip_port_rand())
 #define OS_TASK_NAME_PING "ping"
 
-#define LWIP_DEBUG 1
+//#define LWIP_DEBUG 1
 
 #ifdef LWIP_DEBUG
 
@@ -93,7 +93,7 @@ extern unsigned int lwip_port_rand(void);
 #define API_MSG_DEBUG              LWIP_DBG_ON
 #define TCPIP_DEBUG                LWIP_DBG_OFF
 #define NETIF_DEBUG                LWIP_DBG_ON
-#define SOCKETS_DEBUG              LWIP_DBG_ON
+#define SOCKETS_DEBUG              LWIP_DBG_OFF
 #define DNS_DEBUG                  LWIP_DBG_OFF
 #define AUTOIP_DEBUG               LWIP_DBG_ON
 #define DHCP_DEBUG                 LWIP_DBG_OFF
@@ -123,7 +123,7 @@ extern unsigned int lwip_port_rand(void);
 #define DEFAULT_RAW_RECVMBOX_SIZE TCPIP_MBOX_SIZE
 
 /*----- Value in opt.h for TCPIP_THREAD_STACKSIZE: 0 -----*/
-#define TCPIP_THREAD_STACKSIZE (512 * 3)
+#define TCPIP_THREAD_STACKSIZE (512 * 4)
 
 
 
@@ -137,12 +137,12 @@ extern unsigned int lwip_port_rand(void);
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE               2048
+#define MEM_SIZE               4096
 
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
    should be set high. */
-#define MEMP_NUM_PBUF           16
+#define MEMP_NUM_PBUF           32
 /* MEMP_NUM_RAW_PCB: the number of UDP protocol control blocks. One
    per active RAW "connection". */
 #define MEMP_NUM_RAW_PCB        3
