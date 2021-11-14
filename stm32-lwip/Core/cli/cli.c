@@ -250,12 +250,12 @@ static void cli_thread(void const * params) {
 //			microrl_insert_char(&rl, value);
 
 //		} else {
-			osDelay(10);
+//			osDelay(10);
 //		}
 	}
 }
 
-osThreadDef(clithread, cli_thread, osPriorityNormal, 0, 3 * 1024  / sizeof(StackType_t));
+osThreadDef(clithread, cli_thread, osPriorityNormal, 0, 4 * 1024  / sizeof(StackType_t));
 static osThreadId cli_thread_id;
 
 
