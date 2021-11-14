@@ -53,8 +53,8 @@ struct network_handle *sta_handle, *ap_handle;
 static osThreadId arping_task_id = 0;
 
 
-#define GPIO_RESET_Pin GPIO_PIN_6//PB6
-#define GPIO_RESET_GPIO_Port GPIOB
+#define GPIO_RESET_Pin GPIO_PIN_9//PA9
+#define GPIO_RESET_GPIO_Port GPIOA
 
 /** function definition **/
 
@@ -84,8 +84,8 @@ static void reset_slave(void)
 	HAL_GPIO_WritePin(GPIO_RESET_GPIO_Port, GPIO_RESET_Pin, GPIO_PIN_SET);
 
 	/* revert to initial state */
-//	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-//	HAL_GPIO_Init(GPIO_RESET_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	HAL_GPIO_Init(GPIO_RESET_GPIO_Port, &GPIO_InitStruct);
 
 	/* stop spi transactions short time to avoid slave sync issues */
 	hard_delay(50000);

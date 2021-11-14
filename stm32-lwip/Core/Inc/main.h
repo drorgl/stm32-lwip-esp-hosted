@@ -75,8 +75,10 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 #define ESP_HANDSHAKE_Pin GPIO_PIN_4
 #define ESP_HANDSHAKE_GPIO_Port GPIOB
+#define ESP_HANDSHAKE_EXTI_IRQn EXTI4_IRQn
 #define ESP_DATA_READY_Pin GPIO_PIN_5
 #define ESP_DATA_READY_GPIO_Port GPIOB
+#define ESP_DATA_READY_EXTI_IRQn EXTI9_5_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
