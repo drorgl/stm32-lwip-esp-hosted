@@ -35,13 +35,13 @@ extern "C" {
 #define USR_SPI_CS_GPIO_Port    GPIOA
 #endif
 #ifndef USR_SPI_CS_Pin
-#define USR_SPI_CS_Pin          GPIO_PIN_15
+#define USR_SPI_CS_Pin          GPIO_PIN_4
 #endif
 
-#define GPIO_HANDSHAKE_Pin GPIO_PIN_14
-#define GPIO_HANDSHAKE_GPIO_Port GPIOC
-#define GPIO_DATA_READY_Pin GPIO_PIN_15
-#define GPIO_DATA_READY_GPIO_Port GPIOC
+#define GPIO_HANDSHAKE_Pin GPIO_PIN_4
+#define GPIO_HANDSHAKE_GPIO_Port GPIOB
+#define GPIO_DATA_READY_Pin GPIO_PIN_5
+#define GPIO_DATA_READY_GPIO_Port GPIOB
 
 typedef enum spi_drv_events_s {
 	SPI_DRIVER_ACTIVE
