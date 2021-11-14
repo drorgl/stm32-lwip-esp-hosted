@@ -3,6 +3,7 @@
 #include "cli.h"
 #include "cli_ping.h"
 #include "cli_wifi.h"
+#include "cli_system.h"
 #include  <errno.h>
 #include  <stdio.h>
 #include  <sys/stat.h>
@@ -25,7 +26,7 @@ int _write(int file, char *data, int len) {
 
 void cli_startup() {
 
-
+	cli_system_register();
 	cli_ping_register();
 	cli_wifi_register();
 	cli_initialize();
