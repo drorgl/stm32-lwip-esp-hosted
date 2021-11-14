@@ -247,6 +247,8 @@ static void ap_scan_list_callback(int argc, const char * const * argv,
 		printf("No APs found\n");
 	}
 
+	esp_hosted_free(list);
+
 }
 
 static void connected_stations_list_callback(int argc,
@@ -396,8 +398,8 @@ void cli_wifi_register(void) {
 	cli_register("scan", "scan - scan ap list", ap_scan_list_callback);
 	cli_register("show_connected", "show_connected - show connected stations",
 			connected_stations_list_callback);
-	cli_register("set_softap_config",
-			"set_softap_config <ssid> <password> - join wifi network",
+	cli_register("join",
+			"join <ssid> <password> - join wifi network",
 			set_softap_config_callback);
 	cli_register("start_lwip", "start_lwip - start lwip stack",
 			start_lwip_callback);
