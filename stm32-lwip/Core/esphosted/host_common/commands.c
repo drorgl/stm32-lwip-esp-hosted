@@ -116,6 +116,7 @@ int wifi_get_mac (int mode, char *mac)
     mem_free(tx_data);
     mem_free(rx_data);
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
@@ -124,6 +125,7 @@ err2:
     mem_free(tx_data);
 err3:
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -198,6 +200,7 @@ int wifi_set_mac (int mode, char *mac)
     mem_free(tx_data);
     mem_free(rx_data);
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
@@ -206,6 +209,7 @@ err2:
     mem_free(tx_data);
 err3:
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -259,12 +263,14 @@ int wifi_get_mode (int *mode)
     *mode = resp->resp_get_wifi_mode->mode;
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -332,6 +338,7 @@ int wifi_set_mode (int mode)
     mem_free(tx_data);
     mem_free(rx_data);
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
@@ -340,6 +347,7 @@ err2:
     mem_free(tx_data);
 err3:
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -422,12 +430,14 @@ int wifi_set_ap_config (esp_hosted_control_config_t ap_config)
         mem_free(tx_data);
         mem_free(rx_data);
         mem_free(req_payload);
+        protobuf_c_message_free_unpacked(resp, NULL);
         return INVALID_PASSWORD;
     } else if (resp->resp_set_ap_config->resp == NO_AP_FOUND) {
         command_log("SSID: %s not found\n", (char *)&ap_config.station.ssid);
         mem_free(tx_data);
         mem_free(rx_data);
         mem_free(req_payload);
+        protobuf_c_message_free_unpacked(resp, NULL);
         return NO_AP_FOUND;
     } else if (resp->resp_set_ap_config->resp) {
         command_log("Failed to connect with AP\n");
@@ -437,6 +447,7 @@ int wifi_set_ap_config (esp_hosted_control_config_t ap_config)
     mem_free(tx_data);
     mem_free(rx_data);
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
@@ -445,6 +456,7 @@ err2:
     mem_free(tx_data);
 err3:
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -527,12 +539,14 @@ int wifi_get_ap_config (esp_hosted_control_config_t *ap_config)
 
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -581,12 +595,14 @@ int wifi_disconnect_ap ()
 
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -699,6 +715,7 @@ int wifi_set_softap_config (esp_hosted_control_config_t softap_config)
     mem_free(tx_data);
     mem_free(rx_data);
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
@@ -707,6 +724,7 @@ err2:
     mem_free(tx_data);
 err3:
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -775,12 +793,14 @@ int wifi_get_softap_config (esp_hosted_control_config_t *softap_config)
 
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -829,12 +849,14 @@ int wifi_stop_softap ()
 
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -917,12 +939,14 @@ esp_hosted_wifi_scanlist_t* wifi_ap_scan_list (int *count)
 
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return list;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return NULL;
 }
 
@@ -995,12 +1019,14 @@ esp_hosted_wifi_connected_stations_list* wifi_connected_stations_list(int *num)
 
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return list;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return NULL;
 }
 
@@ -1068,6 +1094,7 @@ int wifi_set_power_save_mode (int power_save_mode)
     mem_free(tx_data);
     mem_free(rx_data);
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
@@ -1076,6 +1103,7 @@ err2:
     mem_free(tx_data);
 err3:
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -1131,12 +1159,14 @@ int wifi_get_power_save_mode (int *power_save_mode)
     *power_save_mode = resp->resp_get_power_save_mode->mode;
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -1185,12 +1215,14 @@ int esp_ota_begin()
 
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -1258,6 +1290,7 @@ int esp_ota_write(uint8_t* ota_data, uint32_t ota_data_len)
     mem_free(tx_data);
     mem_free(rx_data);
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
@@ -1266,6 +1299,7 @@ err2:
     mem_free(tx_data);
 err3:
     mem_free(req_payload);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
 
@@ -1314,11 +1348,13 @@ int esp_ota_end()
 
     mem_free(tx_data);
     mem_free(rx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return SUCCESS;
 
 err1:
     mem_free(rx_data);
 err2:
     mem_free(tx_data);
+    protobuf_c_message_free_unpacked(resp, NULL);
     return FAILURE;
 }
