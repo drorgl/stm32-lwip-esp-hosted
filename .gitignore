@@ -1,2 +1,5 @@
 /.metadata
 /stm32-lwip/Debug/
+/FreeRTOS_TAD_logs
+/stm32-lwip/*.launch
+/stm32-lwip/Release/
