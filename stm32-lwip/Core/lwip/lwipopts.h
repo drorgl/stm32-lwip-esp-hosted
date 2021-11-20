@@ -121,10 +121,19 @@ extern unsigned int lwip_port_rand(void);
 #define DEFAULT_UDP_RECVMBOX_SIZE TCPIP_MBOX_SIZE
 #define DEFAULT_TCP_RECVMBOX_SIZE TCPIP_MBOX_SIZE
 #define DEFAULT_RAW_RECVMBOX_SIZE TCPIP_MBOX_SIZE
+#define DEFAULT_ACCEPTMBOX_SIZE   TCPIP_MBOX_SIZE
 
 /*----- Value in opt.h for TCPIP_THREAD_STACKSIZE: 0 -----*/
 #define TCPIP_THREAD_STACKSIZE (512 * 4)
 
+/**
+ * TCP_MSS: TCP Maximum segment size. (default is 536, a conservative default,
+ * you might want to increase this.)
+ * For the receive side, this MSS is advertised to the remote side
+ * when opening a connection. For the transmit size, this MSS sets
+ * an upper limit on the MSS advertised by the remote host.
+ */
+//#define TCP_MSS                         1460
 
 
 
@@ -137,56 +146,56 @@ extern unsigned int lwip_port_rand(void);
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE               4096
+//#define MEM_SIZE               4096
 
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
    should be set high. */
-#define MEMP_NUM_PBUF           32
+//#define MEMP_NUM_PBUF           32
 /* MEMP_NUM_RAW_PCB: the number of UDP protocol control blocks. One
    per active RAW "connection". */
-#define MEMP_NUM_RAW_PCB        3
+//#define MEMP_NUM_RAW_PCB        3
 /* MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
    per active UDP "connection". */
-#define MEMP_NUM_UDP_PCB        8
+//#define MEMP_NUM_UDP_PCB        8
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
-#define MEMP_NUM_TCP_PCB        5
+//#define MEMP_NUM_TCP_PCB        5
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
-#define MEMP_NUM_TCP_PCB_LISTEN 8
+//#define MEMP_NUM_TCP_PCB_LISTEN 8
 /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
    segments. */
-#define MEMP_NUM_TCP_SEG        16
+//#define MEMP_NUM_TCP_SEG        16
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
    timeouts. */
-#define MEMP_NUM_SYS_TIMEOUT    17
+//#define MEMP_NUM_SYS_TIMEOUT    17
 
 /* The following four are used only with the sequential API and can be
    set to 0 if the application only will use the raw API. */
 /* MEMP_NUM_NETBUF: the number of struct netbufs. */
-#define MEMP_NUM_NETBUF         2
+//#define MEMP_NUM_NETBUF         2
 /* MEMP_NUM_NETCONN: the number of struct netconns. */
-#define MEMP_NUM_NETCONN        2
+//#define MEMP_NUM_NETCONN        2
 /* MEMP_NUM_TCPIP_MSG_*: the number of struct tcpip_msg, which is used
    for sequential API communication and incoming packets. Used in
    src/api/tcpip.c. */
-#define MEMP_NUM_TCPIP_MSG_API   16
-#define MEMP_NUM_TCPIP_MSG_INPKT 16
+//#define MEMP_NUM_TCPIP_MSG_API   16
+//#define MEMP_NUM_TCPIP_MSG_INPKT 16
 
 
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
-#define PBUF_POOL_SIZE          32
+//#define PBUF_POOL_SIZE          32
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
-#define PBUF_POOL_BUFSIZE       256
+//#define PBUF_POOL_BUFSIZE       256
 
 /** DNS maximum number of entries to maintain locally. */
-#define DNS_TABLE_SIZE                  2
+//#define DNS_TABLE_SIZE                  2
 
 /** DNS maximum host name length supported in the name table. */
-#define DNS_MAX_NAME_LENGTH             128
+//#define DNS_MAX_NAME_LENGTH             128
 
 
 /** SYS_LIGHTWEIGHT_PROT
@@ -199,66 +208,66 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* ---------- TCP options ---------- */
 #define LWIP_TCP                1
-#define TCP_TTL                 255
+//#define TCP_TTL                 255
 
-#define LWIP_ALTCP              (LWIP_TCP)
-#ifdef LWIP_HAVE_MBEDTLS
-#define LWIP_ALTCP_TLS          (LWIP_TCP)
-#define LWIP_ALTCP_TLS_MBEDTLS  (LWIP_TCP)
-#endif
+//#define LWIP_ALTCP              (LWIP_TCP)
+//#ifdef LWIP_HAVE_MBEDTLS
+//#define LWIP_ALTCP_TLS          (LWIP_TCP)
+//#define LWIP_ALTCP_TLS_MBEDTLS  (LWIP_TCP)
+//#endif
 
 
 /* Controls if TCP should queue segments that arrive out of
    order. Define to 0 if your device is low on memory. */
-#define TCP_QUEUE_OOSEQ         1
+//#define TCP_QUEUE_OOSEQ         1
 
 /* TCP Maximum segment size. */
-#define TCP_MSS                 1024
+//#define TCP_MSS                 1024
 
 /* TCP sender buffer space (bytes). */
-#define TCP_SND_BUF             2048
+//#define TCP_SND_BUF             2048
 
 /* TCP sender buffer space (pbufs). This must be at least = 2 *
    TCP_SND_BUF/TCP_MSS for things to work. */
-#define TCP_SND_QUEUELEN       (4 * TCP_SND_BUF/TCP_MSS)
+//#define TCP_SND_QUEUELEN       (4 * TCP_SND_BUF/TCP_MSS)
 
 /* TCP writable space (bytes). This must be less than or equal
    to TCP_SND_BUF. It is the amount of space which must be
    available in the tcp snd_buf for select to return writable */
-#define TCP_SNDLOWAT           (TCP_SND_BUF/2)
+//#define TCP_SNDLOWAT           LWIP_MIN(LWIP_MAX(((TCP_SND_BUF)/2), (2 * TCP_MSS) + 1), (TCP_SND_BUF) - 1)//(TCP_SND_BUF/2)
 
 /* TCP receive window. */
-#define TCP_WND                 (2 * 1024)
+//#define TCP_WND                 (2 * 1024)
 
 /* Maximum number of retransmissions of data segments. */
-#define TCP_MAXRTX              12
+//#define TCP_MAXRTX              12
 
 /* Maximum number of retransmissions of SYN segments. */
-#define TCP_SYNMAXRTX           4
+//#define TCP_SYNMAXRTX           4
 
 
 /* ---------- ARP options ---------- */
 #define LWIP_ARP                1
-#define ARP_TABLE_SIZE          10
-#define ARP_QUEUEING            1
+//#define ARP_TABLE_SIZE          10
+//#define ARP_QUEUEING            1
 
 
 /* ---------- IP options ---------- */
 /* Define IP_FORWARD to 1 if you wish to have the ability to forward
    IP packets across network interfaces. If you are going to run lwIP
    on a device with only one network interface, define this to 0. */
-#define IP_FORWARD              1
+//#define IP_FORWARD              1
 
 /* IP reassembly and segmentation.These are orthogonal even
  * if they both deal with IP fragments */
-#define IP_REASSEMBLY           1
-#define IP_REASS_MAX_PBUFS      (10 * ((1500 + PBUF_POOL_BUFSIZE - 1) / PBUF_POOL_BUFSIZE))
-#define MEMP_NUM_REASSDATA      IP_REASS_MAX_PBUFS
-#define IP_FRAG                 1
-#define IPV6_FRAG_COPYHEADER    1
+//#define IP_REASSEMBLY           1
+//#define IP_REASS_MAX_PBUFS      (10 * ((1500 + PBUF_POOL_BUFSIZE - 1) / PBUF_POOL_BUFSIZE))
+//#define MEMP_NUM_REASSDATA      IP_REASS_MAX_PBUFS
+//#define IP_FRAG                 1
+//#define IPV6_FRAG_COPYHEADER    1
 
 /* ---------- ICMP options ---------- */
-#define ICMP_TTL                255
+//#define ICMP_TTL                255
 
 
 /* ---------- DHCP options ---------- */
@@ -279,7 +288,7 @@ a lot of data that needs to be copied, this should be set high. */
 /* ---------- UDP options ---------- */
 #define LWIP_UDP                1
 #define LWIP_UDPLITE            LWIP_UDP
-#define UDP_TTL                 255
+//#define UDP_TTL                 255
 
 
 /* ---------- RAW options ---------- */
@@ -310,7 +319,7 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* ---------- PPP options ---------- */
 
-#define PPP_SUPPORT             1      /* Set > 0 for PPP */
+//#define PPP_SUPPORT             1      /* Set > 0 for PPP */
 
 #if PPP_SUPPORT
 
@@ -338,13 +347,13 @@ a lot of data that needs to be copied, this should be set high. */
 
 /* The following defines must be done even in OPTTEST mode: */
 
-#define LWIP_NETCONN_SEM_PER_THREAD     1
+//#define LWIP_NETCONN_SEM_PER_THREAD     1
 #define LWIP_FREERTOS_CHECK_CORE_LOCKING              1
 
-#if !defined(NO_SYS) || !NO_SYS /* default is 0 */
-void sys_check_core_locking(void);
-#define LWIP_ASSERT_CORE_LOCKED()  sys_check_core_locking()
-#endif
+//#if !defined(NO_SYS) || !NO_SYS /* default is 0 */
+//void sys_check_core_locking(void);
+//#define LWIP_ASSERT_CORE_LOCKED()  sys_check_core_locking()
+//#endif
 
 #ifndef LWIP_PLATFORM_ASSERT
 /* Define LWIP_PLATFORM_ASSERT to something to catch missing stdio.h includes */

@@ -10,6 +10,7 @@
 #include <lwip/prot/etharp.h>
 #include <lwip/dhcp.h>
 #include <lwip/snmp.h>
+#include <lwip/etharp.h>
 #include <string.h>
 #include <assert.h>
 
@@ -20,6 +21,10 @@ struct netif gnetif;
 ip4_addr_t ipaddr;
 ip4_addr_t netmask;
 ip4_addr_t gw;
+
+ip4_addr_t * get_ip_address(){
+	return netif_ip4_addr(&gnetif);
+}
 
 err_t ethernetif_init_low(struct netif *netif) {
 	//lwip init wifi phy
@@ -109,10 +114,10 @@ static void sta_rx_callback(struct network_handle *net_handle) {
 ////			pbuf_free(p);
 ////		}
 //
-//		free(rx_buffer->payload);
-//		rx_buffer->payload = NULL;
-//		free(rx_buffer);
-//		rx_buffer = NULL;
+		free(rx_buffer->payload);
+		rx_buffer->payload = NULL;
+		free(rx_buffer);
+		rx_buffer = NULL;
 	}
 }
 
