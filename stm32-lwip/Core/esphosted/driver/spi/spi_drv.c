@@ -145,7 +145,7 @@ static int esp_netdev_xmit(netdev_handle_t netdev, struct esp_pbuf *net_buf)
 
 	ret = send_to_slave(priv->if_type, priv->if_num,
 			net_buf->payload, net_buf->len);
-	free (net_buf->payload);
+//	free (net_buf->payload);
 	free(net_buf);
 
 	return ret;
@@ -259,9 +259,9 @@ static void deinit_netdev(void)
 static void set_hardware_type(void)
 {
 	// if (is_gpio_alternate_function_set(USR_SPI_CS_GPIO_Port,USR_SPI_CS_Pin)) {
-		hardware_type = HARDWARE_TYPE_ESP32;
+//		hardware_type = HARDWARE_TYPE_ESP32;
 	// } else {
-	// 	hardware_type = HARDWARE_TYPE_ESP32S2_ESP32C3;
+	 	hardware_type = HARDWARE_TYPE_ESP32S2_ESP32C3;
 	// }
 }
 
@@ -488,9 +488,14 @@ static stm_ret_t spi_transaction_esp32(uint8_t * txbuff)
 				(len > MAX_PAYLOAD_SIZE) ||
 				(offset != sizeof(struct esp_payload_header))) {
 
+
 				if (len > MAX_PAYLOAD_SIZE){
-					printf("Payload is too big %d but max is %d\r\n", len, MAX_PAYLOAD_SIZE);
+					printf("Payload is wrong size %d max is %d\r\n", len, MAX_PAYLOAD_SIZE);
 				}
+				if((offset  != 0) && (offset != sizeof(struct esp_payload_header))){
+					printf("offset is wrong %d\r\n", offset);
+				}
+
 
 				/* Free up buffer, as one of following -
 				 * 1. no payload to process
@@ -503,7 +508,7 @@ static stm_ret_t spi_transaction_esp32(uint8_t * txbuff)
 					rxbuff = NULL;
 				}
 				/* Give chance to other tasks */
-				osDelay(0);
+//				osDelay(0);
 
 			} else {
 				rx_checksum = le16toh(payload_header->checksum);
@@ -523,6 +528,7 @@ static stm_ret_t spi_transaction_esp32(uint8_t * txbuff)
 						goto done;
 					}
 				} else {
+					printf("Incorrect Checksum, dropping rx packet\r\n");
 					if (rxbuff) {
 						free(rxbuff);
 						rxbuff = NULL;
@@ -568,6 +574,17 @@ done:
 	return STM_FAIL;
 }
 
+__STATIC_INLINE void Delay_us(volatile uint32_t microseconds)
+{
+  uint32_t clk_cycle_start = DWT->CYCCNT;
+
+  /* Go to number of cycles for system */
+  microseconds *= (HAL_RCC_GetHCLKFreq() / 1000000);
+
+  /* Delay till end */
+  while ((DWT->CYCCNT - clk_cycle_start) < microseconds);
+}
+
 /**
   * @brief  Full duplex transaction SPI transaction for ESP32S2 hardware
   * @param  txbuff: TX SPI buffer
@@ -591,6 +608,8 @@ static stm_ret_t spi_transaction_esp32s2(uint8_t * txbuff)
 		/* Even though, there is nothing to send,
 		 * valid reseted txbuff is needed for SPI driver
 		 */
+
+
 		txbuff = (uint8_t *)malloc(MAX_SPI_BUFFER_SIZE);
 		assert(txbuff);
 		memset(txbuff, 0, MAX_SPI_BUFFER_SIZE);
@@ -598,6 +617,7 @@ static stm_ret_t spi_transaction_esp32s2(uint8_t * txbuff)
 
 	/* SPI transaction */
 	HAL_GPIO_WritePin(USR_SPI_CS_GPIO_Port, USR_SPI_CS_Pin, GPIO_PIN_RESET);
+	Delay_us(10);
 	retval = HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)txbuff,
 			(uint8_t *)rxbuff, MAX_SPI_BUFFER_SIZE, HAL_MAX_DELAY);
 	while( hspi1.State == HAL_SPI_STATE_BUSY );
@@ -620,6 +640,12 @@ static stm_ret_t spi_transaction_esp32s2(uint8_t * txbuff)
 				(len > MAX_PAYLOAD_SIZE) ||
 				(offset != sizeof(struct esp_payload_header))) {
 
+				if (len > MAX_PAYLOAD_SIZE){
+									printf("Payload is wrong size %d max is %d\r\n", len, MAX_PAYLOAD_SIZE);
+								}
+								if((offset  != 0) && (offset != sizeof(struct esp_payload_header))){
+									printf("offset is wrong %d\r\n", offset);
+								}
 				/* Free up buffer, as one of following -
 				 * 1. no payload to process
 				 * 2. input packet size > driver capacity
@@ -631,7 +657,7 @@ static stm_ret_t spi_transaction_esp32s2(uint8_t * txbuff)
 					rxbuff = NULL;
 				}
 				/* Give chance to other tasks */
-				osDelay(0);
+//				osDelay(0);
 
 			} else {
 				rx_checksum = le16toh(payload_header->checksum);
@@ -653,6 +679,7 @@ static stm_ret_t spi_transaction_esp32s2(uint8_t * txbuff)
 						goto done;
 					}
 				} else {
+					printf("Incorrect Checksum, dropping rx packet\r\n");
 					if (rxbuff) {
 						free(rxbuff);
 						rxbuff = NULL;
@@ -833,6 +860,9 @@ static uint8_t * get_tx_buffer(uint8_t *is_valid_tx_buf)
 		len = buf_handle.payload_len;
 	}
 
+	if (len >MAX_PAYLOAD_SIZE ){
+		printf("Incorrect length %d\r\n", len);
+	}
 	if (len) {
 
 		sendbuf = (uint8_t *) malloc(MAX_SPI_BUFFER_SIZE);
