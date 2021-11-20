@@ -70,7 +70,7 @@
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 7 )
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE                    ((size_t)15360)
+#define configTOTAL_HEAP_SIZE                    ((size_t)90000)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configGENERATE_RUN_TIME_STATS            1
 #define configUSE_TRACE_FACILITY                 1
@@ -151,8 +151,8 @@ standard names. */
 /* Definitions needed when configGENERATE_RUN_TIME_STATS is on */
 #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS configureTimerForRunTimeStats
 #define portGET_RUN_TIME_COUNTER_VALUE getRunTimeCounterValue
-extern void freeRTOSCleanupReent(struct	_reent *reent);
-#define portCLEAN_UP_TCB(pxTCB) freeRTOSCleanupReent(&pxTCB->xNewLib_reent)
+//extern void freeRTOSCleanupReent(struct	_reent *reent);
+//#define portCLEAN_UP_TCB(pxTCB) freeRTOSCleanupReent(&pxTCB->xNewLib_reent)
 /* USER CODE END 2 */
 
 /* USER CODE BEGIN Defines */
