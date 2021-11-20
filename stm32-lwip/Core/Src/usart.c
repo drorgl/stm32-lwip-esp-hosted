@@ -24,6 +24,7 @@
 #include <cmsis_os.h>
 #include "ringbuffer/ring_buffer.h"
 
+static SemaphoreHandle_t readSemaphore;
 static osSemaphoreId writeSemaphore;
 
 #define TX_DMA_BUFFER_SIZE 16
@@ -40,7 +41,12 @@ uint8_t tx_buffer_container[255];
 
 void initialize_buffers(void) {
 	osSemaphoreDef(WRITESEM);
-	writeSemaphore = osSemaphoreCreate(osSemaphore(WRITESEM) , 1);
+	writeSemaphore = osSemaphoreCreate(osSemaphore(WRITESEM), 1);
+
+	vSemaphoreCreateBinary(readSemaphore);
+	if (readSemaphore == NULL) {
+		Error_Handler();
+	}
 
 	TM_BUFFER_Init(&rx_buffer, sizeof(rx_buffer_container),
 			rx_buffer_container);
@@ -79,8 +85,11 @@ void MX_USART2_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART2_Init 2 */
+
+
 	HAL_UARTEx_ReceiveToIdle_DMA(&huart2, RX_DMA_buffer, RX_DMA_BUFFER_SIZE);
 	__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+
   /* USER CODE END USART2_Init 2 */
 
 }
@@ -188,10 +197,10 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
 static int tx_next_chunk(void) {
 	int number_of_items_in_tx_buffer = TM_BUFFER_Read(&tx_buffer, TX_DMA_buffer,
-			TX_DMA_BUFFER_SIZE);
+	TX_DMA_BUFFER_SIZE);
 	if (number_of_items_in_tx_buffer > 0) {
 		if (HAL_UART_Transmit_DMA(&huart2, TX_DMA_buffer,
-				number_of_items_in_tx_buffer) != HAL_OK){
+				number_of_items_in_tx_buffer) != HAL_OK) {
 			assert(0);
 		}
 		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
@@ -206,10 +215,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
 		}
 
 		HAL_UARTEx_ReceiveToIdle_DMA(huart, RX_DMA_buffer, RX_DMA_BUFFER_SIZE);
+		BaseType_t xHigherPriorityTaskWoken;
+		xSemaphoreGiveFromISR(readSemaphore,&xHigherPriorityTaskWoken);
 	}
 }
 
-int get_rx_data(uint8_t *buffer, size_t buffer_length) {
+int get_rx_data(uint8_t *buffer, size_t buffer_length, uint32_t timeout) {
+	xSemaphoreTake(readSemaphore,pdMS_TO_TICKS(timeout ));
 	return TM_BUFFER_Read(&rx_buffer, buffer, buffer_length);
 }
 
@@ -235,7 +247,7 @@ void put_tx_data_with_wait(uint8_t *buffer, size_t buffer_length) {
 
 int put_tx_data(uint8_t *buffer, size_t buffer_length) {
 	int ret = 0;
-	if (osSemaphoreWait(writeSemaphore , osWaitForever) == osOK){
+	if (osSemaphoreWait(writeSemaphore, osWaitForever) == osOK) {
 		ret = TM_BUFFER_Write(&tx_buffer, buffer, buffer_length);
 		osSemaphoreRelease(writeSemaphore);
 	}

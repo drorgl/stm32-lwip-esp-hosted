@@ -30,7 +30,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 void put_tx_data_with_wait(uint8_t *buffer, size_t buffer_length);
 int put_tx_data(uint8_t *buffer, size_t buffer_length);
-int get_rx_data(uint8_t *buffer, size_t buffer_length);
+int get_rx_data(uint8_t *buffer, size_t buffer_length, uint32_t timeout);
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart2;
