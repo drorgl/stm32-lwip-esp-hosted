@@ -11,7 +11,7 @@
 #include <sys/queue.h>
 #include <assert.h>
 #include <stdio.h>
-
+#include <stdlib.h>
 
 typedef void (*callback_p)(int argc, const char * const * argv,
 		void (*print)(const char * message));
@@ -236,11 +236,11 @@ static void cli_thread(void const * params) {
 
 		//TODO: add buffer in processing
 			uint8_t buffer[1];
-		int got_bytes = get_rx_data(buffer, 1);
+		int got_bytes = get_rx_data(buffer, 1, 1000);
 		if (got_bytes > 0){
 			microrl_insert_char(&rl, buffer[0]);
-		}else{
-			osDelay(10);
+//		}else{
+//			osDelay(100);
 		}
 
 
