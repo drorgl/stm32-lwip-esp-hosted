@@ -256,87 +256,35 @@ void __env_unlock() {
 /// /brief  Wrap malloc/malloc_r to help debug who requests memory and why.
 /// To use these, add linker options: -Xlinker --wrap=malloc -Xlinker --wrap=_malloc_r
 // Note: These functions are normally unused and stripped by linker.
-//size_t TotalMallocdBytes;
-//int MallocCallCnt;
-//static bool inside_malloc;
 void* __wrap_malloc(size_t nbytes) {
-//	extern void* __real_malloc(size_t nbytes);
-//	MallocCallCnt++;
-//	TotalMallocdBytes += nbytes;
-//	inside_malloc = true;
-//	__malloc_lock(NULL);
 	vTaskSuspendAll();
 	void *p = pvPortMalloc(nbytes);
-//	void *p = __real_malloc(nbytes); // will call malloc_r...
-//	add_alloc(p, nbytes);
 	xTaskResumeAll();
-//	__malloc_unlock(NULL);
-//	inside_malloc = false;
 	return p;
 }
 ;
 void* __wrap__malloc_r(void *reent, size_t nbytes) {
 	(void) (reent);
-//	extern void* __real__malloc_r(size_t nbytes);
-//	if (!inside_malloc) {
-//		MallocCallCnt++;
-//		TotalMallocdBytes += nbytes;
-//	};
-//	void *p = __real__malloc_r(nbytes);
 	vTaskSuspendAll();
 	void *p = pvPortMalloc(nbytes);
-//	add_alloc(p, nbytes);
 	xTaskResumeAll();
 	return p;
 }
 ;
 
 void __wrap_free(void *p) {
-//	extern void* __real_free(void *p);
-	//we can use the  size_t malloc_usable_size(void *ptr) to find the block size and reduce it from the counter
-
-//	  MallocCallCnt--;
-//	__malloc_lock(NULL);
 	vTaskSuspendAll();
 	vPortFree(p);
-//	__real_free(p);
-//	remove_alloc(p);
 	xTaskResumeAll();
-//	__malloc_unlock(NULL);
 }
 
 void __wrap__free_r(void *reent, void *p) {
-//	extern void* __real_free(void *p);
-	//we can use the  size_t malloc_usable_size(void *ptr) to find the block size and reduce it from the counter
-
-//	  MallocCallCnt--;
-//	__malloc_lock(NULL);
 	vTaskSuspendAll();
 	vPortFree(p);
-//	__real_free(p);
-//	remove_alloc(p);
 	xTaskResumeAll();
-//	__malloc_unlock(NULL);
 }
 
 #endif
-
-// ================================================================================================
-// Implement FreeRTOS's memory API using newlib-provided malloc family.
-// ================================================================================================
-
-//void *pvPortMalloc( size_t xSize ) PRIVILEGED_FUNCTION {
-//    void *p = malloc(xSize);
-//    return p;
-//}
-//void vPortFree( void *pv ) PRIVILEGED_FUNCTION {
-//    free(pv);
-//};
-
-//size_t xPortGetFreeHeapSize(void) PRIVILEGED_FUNCTION {
-//	struct mallinfo mi = mallinfo(); // available space now managed by newlib
-//	return mi.fordblks + heapBytesRemaining; // plus space not yet handed to newlib by sbrk
-//}
 //
 //// GetMinimumEverFree is not available in newlib's malloc implementation.
 //// So, no implementation is provided: size_t xPortGetMinimumEverFreeHeapSize( void ) PRIVILEGED_FUNCTION;
@@ -349,18 +297,6 @@ void __wrap__free_r(void *reent, void *p) {
 int get_available_heap_memory(void) {
 	return heapBytesRemaining;
 }
-//
-//int get_used_heap_memory(void){
-//	return ((unsigned int)__end_of_heap) - ((unsigned_int)&_pvHeapStart);
-//}
-//
-//int get_free_heap_memory(void){
-//	return ((unsigned int)&_pvHeapLimit) - ((unsigned int)__end_of_heap);
-//}
-//
-//int get_heap_size(void){
-//	return (unsigned int)&_pvHeapLimit-(unsigned int)&_pvHeapStart;
-//}
 
 int get_total_heap_memory(void) {
 	return TotalHeapSize;
